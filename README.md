@@ -70,7 +70,7 @@ Any platform that speaks MCP connects directly:
 | Priority routing        | —    | Yes          | Yes                 |
 | Cross-team coordination | —    | —            | Yes                 |
 
-30-day Pro trial included with every install. Get a key at [keystoneproject.dev](https://keystoneproject.dev).
+Get a key at [keystoneproject.dev](https://keystoneproject.dev).
 
 ## Data ownership
 
