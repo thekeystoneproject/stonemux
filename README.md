@@ -4,7 +4,7 @@
 
 A compiled Rust MCP server that orchestrates multiple agent instances with inboxes, task dispatch, broadcast channels, and doorbell webhooks. No tmux. No polling. Framework-independent and local-first.
 
-![Rust](https://img.shields.io/badge/Built_with-Rust-dea584?style=flat-square) ![License](https://img.shields.io/badge/License-BSL_1.1-yellow?style=flat-square) ![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux-blue?style=flat-square)
+![Rust](https://img.shields.io/badge/Built_with-Rust-dea584?style=flat-square) ![License](https://img.shields.io/badge/License-Proprietary-red?style=flat-square) ![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux-blue?style=flat-square)
 
 ## Install
 
@@ -90,6 +90,4 @@ stonemux is part of the Stone suite — three compiled Rust MCP servers for AI a
 
 ## License
 
-[Business Source License 1.1](LICENSE)
-
-Copyright (c) 2026 The Keystone Project, Inc.
+[Proprietary](LICENSE) — Copyright (c) 2026 The Keystone Project, Inc. All rights reserved.
