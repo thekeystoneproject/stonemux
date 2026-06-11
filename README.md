@@ -78,7 +78,7 @@ Your data stays on your machine, in open SQLite databases you own. No cloud depe
 
 ## Documentation
 
-Full documentation at [keystoneproject.dev/docs/stonemux](https://keystoneproject.dev/docs/stonemux/).
+Full documentation at [keystoneproject.dev/docs](https://keystoneproject.dev/docs/).
 
 ## Stone Suite
 
