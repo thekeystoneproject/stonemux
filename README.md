@@ -1,10 +1,10 @@
 # stonemux
 
-**Multi-agent coordination engine for AI frameworks.**
+**Multi-agent coordination across frameworks.**
 
-![Rust](https://img.shields.io/badge/Built_with-Rust-dea584?style=flat-square) ![MCP](https://img.shields.io/badge/MCP-compatible-blue?style=flat-square) ![Platforms](https://img.shields.io/badge/Adapters-7_platforms-green?style=flat-square) ![License](https://img.shields.io/badge/License-BSL_1.1-yellow?style=flat-square)
+![Rust](https://img.shields.io/badge/Built_with-Rust-dea584?style=flat-square) ![License](https://img.shields.io/badge/License-BSL_1.1-yellow?style=flat-square)
 
-stonemux coordinates multiple AI agents across any framework. Agent registry, task routing, event bus, state synchronization, and channel-based messaging — all through a single binary. Connect agents across CrewAI, LangGraph, Hermes, and four more platforms without glue code.
+A compiled Rust server that coordinates AI agents across any framework. Agent registry, task dispatch, channel messaging, event streaming, group coordination, and shared state — all through one binary on port 3392. Run agents on CrewAI, LangGraph, Hermes, and four more platforms in one coordinated fleet.
 
 ## Install
 
@@ -12,43 +12,66 @@ stonemux coordinates multiple AI agents across any framework. Agent registry, ta
 brew install thekeystoneproject/tap/stonemux
 ```
 
-Or download the binary from [Releases](https://github.com/thekeystoneproject/stonemux/releases).
+Or download from [Releases](https://github.com/thekeystoneproject/stonemux/releases).
 
 ## Quick Start
 
 ```bash
-# Start the server
 stonemux serve
-
-# Register an agent
-curl -X POST http://127.0.0.1:3392/agents/register \
-  -H "Content-Type: application/json" \
-  -d '{"agent_id": "researcher-1", "capabilities": ["search", "summarize"]}'
-
-# Send a task
-curl -X POST http://127.0.0.1:3392/tasks/dispatch \
-  -H "Content-Type: application/json" \
-  -d '{"task": "Research competitor pricing", "target": "researcher-1"}'
-
-# Check status
-curl http://127.0.0.1:3392/health
 ```
 
-## Adapters
+### With CrewAI
 
-MIT-licensed adapters for every major AI agent framework.
+```python
+from stonemux_crewai import StonemuxCrewRouter
 
-| Platform | Directory | Description |
-|----------|-----------|-------------|
-| [Hermes](adapters/hermes/) | `adapters/hermes/` | Agent coordinator |
-| [CrewAI](adapters/crewai/) | `adapters/crewai/` | Crew task router |
-| [LangGraph](adapters/langgraph/) | `adapters/langgraph/` | Graph state sync |
-| [Haystack](adapters/haystack/) | `adapters/haystack/` | Pipeline coordinator |
-| [OpenHands](adapters/openhands/) | `adapters/openhands/` | Agent coordinator |
-| [MS Agent Framework](adapters/ms_agent/) | `adapters/ms_agent/` | Agent router |
-| [Google ADK](adapters/google_adk/) | `adapters/google_adk/` | Agent coordinator |
+router = StonemuxCrewRouter(agent_id="research-crew")
+router.dispatch(task="Analyze competitor pricing", target="analyst-1")
+```
 
-Each adapter is a thin Python shim (~150 LOC) that implements the platform's coordination interface and routes all operations to the stonemux REST API.
+### With Hermes
+
+```python
+from stonemux_hermes import StonemuxCoordinator
+
+coordinator = StonemuxCoordinator(agent_id="hermes-agent-1")
+coordinator.register(capabilities=["search", "summarize"])
+coordinator.listen()  # SSE event stream
+```
+
+## REST API
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/agents/register` | POST | Register an agent with capabilities |
+| `/agents/deregister` | POST | Deregister an agent |
+| `/tasks/dispatch` | POST | Dispatch a task to an agent by capability |
+| `/tasks/status` | GET | Task status and results |
+| `/msg/send` | POST | Send a message to an agent or channel |
+| `/msg/read` | GET | Read messages for an agent |
+| `/channels/create` | POST | Create a communication channel |
+| `/channels/join` | POST | Join a channel |
+| `/state/get` | GET | Read shared coordination state |
+| `/state/set` | POST | Write shared coordination state |
+| `/events` | GET | SSE event stream for real-time coordination |
+| `/stats` | GET | Fleet status and coordination metrics |
+| `/health` | GET | Server health check |
+
+## Framework Adapters
+
+Each adapter implements the framework's native coordination interface and routes to stonemux's REST API. Full lifecycle integrations — registration, dispatch, event streaming, state sync.
+
+| Framework | Adapter | What it implements |
+|-----------|---------|-------------------|
+| [Hermes](adapters/hermes/) | `StonemuxCoordinator` | Agent registration, task dispatch, SSE event listener |
+| [CrewAI](adapters/crewai/) | `StonemuxCrewRouter` | Crew task routing with deregister/shutdown |
+| [LangGraph](adapters/langgraph/) | `StonemuxGraphSync` | Graph state synchronization across agents |
+| [Haystack](adapters/haystack/) | `StonemuxPipelineCoordinator` | Pipeline-level agent coordination |
+| [OpenHands](adapters/openhands/) | `StonemuxAgentCoordinator` | Agent coordination with event streaming |
+| [MS Agent Framework](adapters/ms_agent/) | `StonemuxAgentRouter` | Agent routing and state management |
+| [Google ADK](adapters/google_adk/) | `StonemuxADKCoordinator` | Full ADK coordination including broadcast/discover |
+
+All adapters are MIT licensed.
 
 ## Configuration
 
@@ -59,29 +82,35 @@ port = 3392
 data_dir = "~/.stonemux"
 ```
 
-Environment overrides: `STONEMUX_HOST`, `STONEMUX_PORT`, `STONEMUX_DATA_DIR`
+`STONEMUX_HOST`, `STONEMUX_PORT`, `STONEMUX_DATA_DIR` environment overrides.
 
 ## Pricing
 
-| Feature | Free | Pro ($14/mo) | Enterprise |
-|---------|------|--------------|------------|
+| | Free | Pro ($14/mo) | Enterprise |
+|---|------|--------------|------------|
 | Registered agents | 3 | Unlimited | Unlimited |
-| Task routing | Yes | Yes | Yes |
+| Task dispatch | Yes | Yes | Yes |
 | Event bus | Yes | Yes | Yes |
 | State persistence | — | Yes | Yes |
 | Priority routing | — | Yes | Yes |
 | Cross-team coordination | — | — | Yes |
 
-Get a license key at [keystoneproject.dev](https://keystoneproject.dev).
+```bash
+stonemux activate SX-XXXX-XXXX-XXXX-XXXX
+```
 
-## Links
+Get a key at [keystoneproject.dev](https://keystoneproject.dev).
 
-- [keystoneproject.dev](https://keystoneproject.dev) — Product site and docs
-- [stonemem](https://github.com/thekeystoneproject/stonemem) — Institutional memory engine
-- [stonegate](https://github.com/thekeystoneproject/stonegate) — MCP tool gateway
+## Stone Suite
+
+| Server | Purpose |
+|--------|---------|
+| [stonemem](https://github.com/thekeystoneproject/stonemem) | Persistent agent memory |
+| **stonemux** | Multi-agent coordination |
+| [stonegate](https://github.com/thekeystoneproject/stonegate) | MCP tool gateway |
 
 ## License
 
-The stonemux binary is licensed under [BSL 1.1](LICENSE). Adapters are [MIT licensed](adapters/LICENSE).
+Binary: [BSL 1.1](LICENSE). Adapters: [MIT](adapters/LICENSE).
 
-Built by [The Keystone Project](https://keystoneproject.dev).
+[The Keystone Project](https://keystoneproject.dev)
